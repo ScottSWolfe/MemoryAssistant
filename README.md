@@ -8,5 +8,6 @@ Mobile App developed for a class project to be the companion of an Alexa Skill t
 * Install the Expo App on your device
 * Install Expo CLI by running `npm install expo-cli --global`
 * Clone the repository to a local directory
+* Update `./constants/ApiKeys.js` with actual credentials
 * Run `npm install` in the directory
 * Run `expo start` and follow the directions
