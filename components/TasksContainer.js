@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { ScrollView, StyleSheet, FlatList, StatusBar, Platform, Text } from 'react-native';
 import { View } from 'native-base';
+import { firebase } from '../api/firebaseHelper';
 
 import Utils from '../utils';
 import CONSTANTS from '../constants';
@@ -70,7 +71,7 @@ export default class TasksContainer extends React.Component {
     this.props.tasksReference.add({
       title: task.title,
       completed: task.completed,
-      time_created: Date.now(),
+      time_created: firebase.firestore.FieldValue.serverTimestamp(),
     });  
   }
 
