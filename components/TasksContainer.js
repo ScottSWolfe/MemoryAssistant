@@ -1,8 +1,7 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { ScrollView, StyleSheet, FlatList, StatusBar, Platform, Text } from 'react-native';
 import { View } from 'native-base';
-import { firebase } from '../api/firebaseHelper';
+import { firebaseHelper } from '../api/firebaseHelper';
 
 import Utils from '../utils';
 import CONSTANTS from '../constants';
@@ -24,10 +23,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const propTypes = {
-  screen: PropTypes.oneOf([CONSTANTS.ALL, CONSTANTS.ACTIVE, CONSTANTS.COMPLETED]).isRequired,
-};
-
 export default class TasksContainer extends React.Component {
   state = {
     addingTask: false,
@@ -46,7 +41,7 @@ export default class TasksContainer extends React.Component {
         data={filteredData}
         keyExtractor={item => item._id}
         renderItem={({ item: task }) => (
-          <TaskItem task={task} onUpdate={this.api.update} onDelete={this.api.destroy} />
+          <TaskItem task={task} onUpdate={firebaseHelper.updateTask} onDelete={firebaseHelper.destroy} />
         )}
       />
     );
@@ -67,28 +62,6 @@ export default class TasksContainer extends React.Component {
     return tasksData;
   };
 
-  add = (task) => {
-    this.props.tasksReference.add({
-      title: task.title,
-      completed: task.completed,
-      time_created: firebase.firestore.FieldValue.serverTimestamp(),
-    });  
-  }
-
-  update = (editedTask) => {
-    this.props.tasksReference.doc(editedTask.id).update(
-      {
-        title: editedTask.title,
-        time_created: editedTask.createdAt,
-        completed: editedTask.completed
-      }
-    );
-  };
-
-  destroy = (task) => {
-    this.props.tasksReference.doc(task.id).delete();
-  };
-
   render() {
     const isAndroid = Platform.OS === 'android';
     return (
@@ -104,7 +77,7 @@ export default class TasksContainer extends React.Component {
             style={{ width: '100%', top: 15 }}
             data={this.filterTasksData(this.props.tasks)}
             renderItem={({ item }) => (
-              <TaskItem task={item} onUpdate={this.update} onDelete={this.destroy} />
+              <TaskItem task={item} onUpdate={firebaseHelper.updateTask} onDelete={firebaseHelper.destroyTask} />
             )}
           />
           {this.state.addingTask ? (
@@ -112,7 +85,7 @@ export default class TasksContainer extends React.Component {
               <AddTask
                 onAdd={(task) => {
                   this.setState({ addingTask: false });
-                  this.add(task);
+                  firebaseHelper.addTask(task);
                 }}
                 onCancelDelete={() => this.setState({ addingTask: false })}
                 onBlur={() => this.setState({ addingTask: false })}
@@ -125,5 +98,3 @@ export default class TasksContainer extends React.Component {
     );
   }
 }
-
-TasksContainer.propTypes = propTypes;

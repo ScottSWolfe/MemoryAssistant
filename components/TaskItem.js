@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
-import PropTypes from 'prop-types';
 import { View, CheckBox, Body } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -20,16 +19,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
 });
-
-const propTypes = {
-  task: PropTypes.shape({
-    title: PropTypes.string,
-    completed: PropTypes.bool,
-    createdAt: PropTypes.number,
-  }).isRequired,
-  onUpdate: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
-};
 
 class TaskItem extends Component {
   onTaskItemToggle = (task, propAction) => {
@@ -99,7 +88,5 @@ class TaskItem extends Component {
     );
   }
 }
-
-TaskItem.propTypes = propTypes;
 
 export default TaskItem;

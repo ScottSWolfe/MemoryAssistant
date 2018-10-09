@@ -1,36 +1,24 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { TextInput, TouchableOpacity } from 'react-native';
 import { View, Body, CheckBox } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
-
-const propTypes = {
-  task: PropTypes.shape({
-    title: PropTypes.string,
-    completed: PropTypes.bool,
-    createdAt: PropTypes.number,
-  }),
-  onAdd: PropTypes.func.isRequired,
-  onCancelDelete: PropTypes.func.isRequired,
-  onBlur: PropTypes.func.isRequired,
-};
 
 const defaultProps = {
   task: {
     title: '',
     completed: false,
-    createdAt: 0,
+    time_created: 0,
   },
 };
 
 class AddTask extends Component {
   constructor(props) {
     super(props);
-    const { title, completed, createdAt } = this.props.task;
+    const { title, completed, time_created } = this.props.task;
     this.state = {
       title,
       completed,
-      createdAt,
+      time_created,
     };
   }
 
@@ -99,7 +87,6 @@ class AddTask extends Component {
   }
 }
 
-AddTask.propTypes = propTypes;
 AddTask.defaultProps = defaultProps;
 
 export default AddTask;

@@ -12,7 +12,7 @@ class Utils {
         // remove tasks which are deleted in stream data
         .filter(task => !task._deleted)
         // finally sort on the basis of creation timestamp
-        .sort((a, b) => a.createdAt - b.createdAt);
+        .sort((a, b) => a.time_created - b.time_created);
     }
   }
   

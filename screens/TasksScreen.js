@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {firebase, firestore} from '../api/firebaseHelper';
+import {firebase, firestore, firebaseHelper} from '../api/firebaseHelper';
 import TasksContainer from '../components/TasksContainer';
 
 export default class TasksScreen extends React.Component {
@@ -10,6 +10,7 @@ export default class TasksScreen extends React.Component {
 
   constructor(props) {
     super(props);
+    this.onCollectionUpdate = this.onCollectionUpdate.bind(this);
   }
 
   componentDidMount() {
@@ -21,22 +22,7 @@ export default class TasksScreen extends React.Component {
   }
 
   async setupTasks() {
-    await this.setTasksReference();
-    this.unsubscribe = this.tasksReference.onSnapshot(this.onCollectionUpdate);
-  }
-
-  async setTasksReference() {
-    const user_id = firebase.auth().currentUser.uid;
-    return firestore.collection('groups')
-      .where('users', 'array-contains', user_id).limit(1).get()
-      .then((snapshot) => {
-        snapshot.forEach((doc) => {
-          this.tasksReference = firestore.collection('groups').doc(doc.id).collection('tasks');
-        });
-      })
-      .catch((err) => {
-        console.log('Error getting documents', err);
-      });
+    this.unsubscribe = firebaseHelper.subscribeToTasksCollectionUpdates(this.onCollectionUpdate);
   }
 
   onCollectionUpdate = (querySnapshot) => {
@@ -46,7 +32,7 @@ export default class TasksScreen extends React.Component {
       tasks.push({
         title: title,
         completed: completed,
-        createdAt: time_created,
+        time_created: time_created,
         id: doc.id
       });
     });
