@@ -23,12 +23,20 @@ class FirebaseHelper {
     this.destroyTask = this.destroyTask.bind(this);
   }
 
+  async signUp(email, password) {
+    return this.firebase.auth().createUserWithEmailAndPassword(email, password);
+  }
+
   async login(email, password) {
     return this.firebase.auth().signInWithEmailAndPassword(email, password);
   }
 
   async logout() {
     return this.firebase.auth().signOut();
+  }
+
+  async onAuthStateChanged(callback) {
+    this.firebase.auth().onAuthStateChanged(callback);
   }
 
   getCurrentUserId() {
@@ -65,14 +73,14 @@ class FirebaseHelper {
 
   async subscribeToTasksCollectionUpdates(callback) {
     await this.setupReferenceToTasksCollection();
-    this.tasksReference.onSnapshot(callback);
+    return this.tasksReference.onSnapshot(callback);
   }
 
   async addTask(task) {
     return this.tasksReference.add({
       title: task.title,
       completed: task.completed,
-      time_created: firebase.firestore.FieldValue.serverTimestamp()
+      time_created: this.firebase.firestore.FieldValue.serverTimestamp()
     });  
   }
 

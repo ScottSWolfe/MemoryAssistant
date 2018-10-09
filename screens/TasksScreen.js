@@ -22,7 +22,7 @@ export default class TasksScreen extends React.Component {
   }
 
   async setupTasks() {
-    this.unsubscribe = firebaseHelper.subscribeToTasksCollectionUpdates(this.onCollectionUpdate);
+    this.unsubscribe = await firebaseHelper.subscribeToTasksCollectionUpdates(this.onCollectionUpdate);
   }
 
   onCollectionUpdate = (querySnapshot) => {
