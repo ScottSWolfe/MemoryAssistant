@@ -1,60 +1,58 @@
 import React from 'react';
-import { Platform } from 'react-native';
-import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
+import { MaterialIcons } from '@expo/vector-icons';
+import { TabNavigator, TabBarBottom } from 'react-navigation';
 
-import TabBarIcon from '../components/TabBarIcon';
-import HomeScreen from '../screens/HomeScreen';
-import LinksScreen from '../screens/LinksScreen';
-import SettingsScreen from '../screens/SettingsScreen';
+import Colors from '../constants/Colors';
+import CONSTANTS from '../constants/index';
+import TasksScreen from '../screens/TasksScreen';
 
-const HomeStack = createStackNavigator({
-  Home: HomeScreen,
+
+const commonNavigationOptions = ({ navigation }) => ({
+  header: null,
+  title: navigation.state.routeName,
 });
 
-HomeStack.navigationOptions = {
-  tabBarLabel: 'Home',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-information-circle'
-      }
-    />
-  ),
+const routeOptions = {
+  screen: TasksScreen,
+  navigationOptions: commonNavigationOptions,
 };
 
-const LinksStack = createStackNavigator({
-  Links: LinksScreen,
-});
+const TabNav = TabNavigator(
+  {
+    [CONSTANTS.ALL]: routeOptions,
+    [CONSTANTS.ACTIVE]: routeOptions,
+    [CONSTANTS.COMPLETED]: routeOptions,
+  },
+  {
+    navigationOptions: ({ navigation }) => ({
+      tabBarIcon: ({ focused }) => {
+        const { routeName } = navigation.state;
+        let iconName;
+        switch (routeName) {
+          case CONSTANTS.ALL:
+            iconName = 'format-list-bulleted';
+            break;
+          case CONSTANTS.ACTIVE:
+            iconName = 'filter-center-focus';
+            break;
+          case CONSTANTS.COMPLETED:
+            iconName = 'playlist-add-check';
+        }
+        return (
+          <MaterialIcons
+            name={iconName}
+            size={28}
+            style={{ marginBottom: -3 }}
+            color={focused ? Colors.tabIconSelected : Colors.tabIconDefault}
+          />
+        );
+      },
+    }),
+    tabBarComponent: TabBarBottom,
+    tabBarPosition: 'bottom',
+    animationEnabled: true,
+    swipeEnabled: true,
+  },
+);
 
-LinksStack.navigationOptions = {
-  tabBarLabel: 'Links',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? `ios-link${focused ? '' : '-outline'}` : 'md-link'}
-    />
-  ),
-};
-
-const SettingsStack = createStackNavigator({
-  Settings: SettingsScreen,
-});
-
-SettingsStack.navigationOptions = {
-  tabBarLabel: 'Settings',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? `ios-options${focused ? '' : '-outline'}` : 'md-options'}
-    />
-  ),
-};
-
-export default createBottomTabNavigator({
-  HomeStack,
-  LinksStack,
-  SettingsStack,
-});
+export default TabNav;
