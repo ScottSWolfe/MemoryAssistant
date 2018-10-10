@@ -2,12 +2,16 @@ import React from 'react'
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native'
 import { firebaseHelper } from '../api/firebaseHelper';
 
-export default class Loading extends React.Component {
+export default class PostLoginLoadingScreen extends React.Component {
 
   componentDidMount() {
-    firebaseHelper.onAuthStateChanged(user => {
-      this.props.navigation.navigate(user ? 'PostLoginLoading' : 'SignUp');
-    });
+    this.loadUserData()
+      .then(() => { this.props.navigation.navigate('Main') })
+      .catch((error) => { console.log(error) });
+  }
+
+  async loadUserData() {
+    return firebaseHelper.initializeUserData();
   }
 
   render() {

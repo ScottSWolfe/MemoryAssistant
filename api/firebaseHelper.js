@@ -16,8 +16,12 @@ class FirebaseHelper {
   constructor() {
     this.firestore = firestore;
     this.firebase = firebase;
+
+    this.userId = null;
     this.tasksReference = null;
     
+    this.initializeUserData = this.initializeUserData.bind(this);
+    this.subscribeToTasksCollectionUpdates = this.subscribeToTasksCollectionUpdates.bind(this);
     this.addTask = this.addTask.bind(this);
     this.updateTask = this.updateTask.bind(this);
     this.destroyTask = this.destroyTask.bind(this);
@@ -39,40 +43,48 @@ class FirebaseHelper {
     this.firebase.auth().onAuthStateChanged(callback);
   }
 
+  async initializeUserData() {
+    this.userId = this.getCurrentUserId();
+    this.tasksReference = await this.getTasksCollectionReference();
+  }
+
   getCurrentUserId() {
     let user = this.firebase.auth().currentUser;
     return user ? user.uid : null;
   }
 
-  async getUsersGroup() {
-    // note that this only retrieves
-    // the first group found for a user
+  async getTasksCollectionReference() {
+    const groupId = await this.getUsersGroupId();
+    return this.firestore.collection('groups').doc(groupId).collection('tasks');
+  }
 
-    const userId = this.getCurrentUserId();
-    if (!userId) {
-      return null;
+  async getUsersGroupId() {
+    const snapshot = await this.findUsersGroup();
+    let groupId;
+    if (snapshot.empty) {
+       const newDoc = await this.createUsersGroup();
+       groupId = newDoc.id;
     }
+    else {
+      groupId = snapshot.docs[0].id;
+    }
+    return groupId;
+  }
 
-    return firestore.collection('groups')
-      .where('users', 'array-contains', userId)
+  async findUsersGroup() {
+    return this.firestore.collection('groups')
+      .where('users', 'array-contains', this.userId)
       .limit(1)
       .get();
   }
 
-  async setupReferenceToTasksCollection() {
-    try {
-      snapshot = await this.getUsersGroup();
-      snapshot.forEach((doc) => {
-        this.tasksReference = firestore.collection('groups').doc(doc.id).collection('tasks');
-      });
-    }
-    catch (error) {
-      console.log('Error getting documents', error);
-    }
+  async createUsersGroup() {
+    return this.firestore.collection('groups').add({
+      users: [this.userId]
+    })
   }
 
   async subscribeToTasksCollectionUpdates(callback) {
-    await this.setupReferenceToTasksCollection();
     return this.tasksReference.onSnapshot(callback);
   }
 

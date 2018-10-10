@@ -8,7 +8,7 @@ export default class SignUp extends React.Component {
 
   handleSignUp = () => {
     firebaseHelper.signUp(this.state.email, this.state.password)
-      .then(() => this.props.navigation.navigate('Main'))
+      .then(() => this.props.navigation.navigate('PostLoginLoading'))
       .catch(error => this.setState({ errorMessage: error.message }));
   }
 
