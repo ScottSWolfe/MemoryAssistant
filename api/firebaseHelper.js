@@ -19,7 +19,8 @@ class FirebaseHelper {
 
     this.userId = null;
     this.tasksReference = null;
-    	
+      
+    this.logout = this.logout.bind(this);
     this.initializeUserData = this.initializeUserData.bind(this);
     this.subscribeToTasksCollectionUpdates = this.subscribeToTasksCollectionUpdates.bind(this);
     this.addTask = this.addTask.bind(this);
