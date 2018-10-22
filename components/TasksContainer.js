@@ -1,9 +1,8 @@
 import React from 'react';
-import { ScrollView, StyleSheet, FlatList, StatusBar, Platform, Text } from 'react-native';
+import { ScrollView, StyleSheet, FlatList, StatusBar, Platform, KeyboardAvoidingView } from 'react-native';
 import { View } from 'native-base';
-import { firebaseHelper } from '../api/firebaseHelper';
 
-import Utils from '../utils';
+import { firebaseHelper } from '../api/firebaseHelper';
 import CONSTANTS from '../constants';
 import COLORS from '../constants/Colors';
 import Header from '../components/Header';
@@ -28,25 +27,6 @@ export default class TasksContainer extends React.Component {
     addingTask: false,
   };
 
-  onAllData = (tasks, streamData) => {
-    // merge streaming tasks data along with current tasks
-    const tasksData = Utils.mergeTasks(tasks, streamData);
-
-    // filter data based on "screen": [All | Active | Completed]
-    const filteredData = this.filterTasksData(tasksData);
-
-    return (
-      <FlatList
-        style={{ width: '100%', top: 15 }}
-        data={filteredData}
-        keyExtractor={item => item._id}
-        renderItem={({ item: task }) => (
-          <TaskItem task={task} onUpdate={firebaseHelper.updateTask} onDelete={firebaseHelper.destroy} />
-        )}
-      />
-    );
-  };
-
   filterTasksData = (tasksData) => {
     const { screen } = this.props;
 
@@ -65,8 +45,7 @@ export default class TasksContainer extends React.Component {
   render() {
     const isAndroid = Platform.OS === 'android';
     return (
-      <View style={{ flex: 1 }}>
-        <Header />
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
         {isAndroid ? (
           <StatusBar backgroundColor={COLORS.primary} barStyle="light-content" />
         ) : (
@@ -94,7 +73,7 @@ export default class TasksContainer extends React.Component {
           ) : null}
         </ScrollView>
         <AddTaskButton onPress={() => this.setState({ addingTask: true })} />
-      </View>
+      </KeyboardAvoidingView>
     );
   }
 }

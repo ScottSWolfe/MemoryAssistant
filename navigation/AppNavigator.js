@@ -5,11 +5,12 @@ import SignUpScreen from '../screens/SignUpScreen'
 import LoginScreen from '../screens/LoginScreen'
 import PostLoginLoadingScreen from '../screens/PostLoginLoadingScreen'
 import MainTabNavigator from './MainTabNavigator';
+import RootComponent from './RootComponent';
 
 export default createSwitchNavigator({
   Loading: LoadingScreen,
   Login: LoginScreen,
   SignUp: SignUpScreen,
   PostLoginLoading: PostLoginLoadingScreen,
-  Main: MainTabNavigator,
+  Main: RootComponent,
 });
