@@ -1,5 +1,5 @@
 export default {
-  ALL: 'All',
+  TODAY: 'Today',
   ACTIVE: 'Active',
   COMPLETED: 'Completed',
 };

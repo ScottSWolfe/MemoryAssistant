@@ -19,7 +19,7 @@ const routeOptions = {
 
 const TabNav = TabNavigator(
   {
-    [CONSTANTS.ALL]: routeOptions,
+    [CONSTANTS.TODAY]: routeOptions,
     [CONSTANTS.ACTIVE]: routeOptions,
     [CONSTANTS.COMPLETED]: routeOptions,
   },
@@ -29,7 +29,7 @@ const TabNav = TabNavigator(
         const { routeName } = navigation.state;
         let iconName;
         switch (routeName) {
-          case CONSTANTS.ALL:
+          case CONSTANTS.TODAY:
             iconName = 'format-list-bulleted';
             break;
           case CONSTANTS.ACTIVE:
