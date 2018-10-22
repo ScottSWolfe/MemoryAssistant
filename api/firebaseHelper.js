@@ -19,7 +19,7 @@ class FirebaseHelper {
 
     this.userId = null;
     this.tasksReference = null;
-    
+    	
     this.initializeUserData = this.initializeUserData.bind(this);
     this.subscribeToTasksCollectionUpdates = this.subscribeToTasksCollectionUpdates.bind(this);
     this.addTask = this.addTask.bind(this);
@@ -85,7 +85,7 @@ class FirebaseHelper {
   }
 
   async subscribeToTasksCollectionUpdates(callback) {
-    return this.tasksReference.onSnapshot(callback);
+    return this.tasksReference.orderBy('time_created').onSnapshot(callback);
   }
 
   async addTask(task) {
