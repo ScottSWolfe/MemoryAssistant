@@ -25,6 +25,8 @@ class FirebaseHelper {
     this.addTask = this.addTask.bind(this);
     this.updateTask = this.updateTask.bind(this);
     this.destroyTask = this.destroyTask.bind(this);
+    this.getCurrentTimestamp = this.getCurrentTimestamp.bind(this);
+    this.getStartOfTodayTimestamp = this.getStartOfTodayTimestamp.bind(this);
   }
 
   async signUp(email, password) {
@@ -85,15 +87,18 @@ class FirebaseHelper {
   }
 
   async subscribeToTasksCollectionUpdates(callback) {
-    return this.tasksReference.orderBy('time_created').onSnapshot(callback);
+    return this.tasksReference
+      .orderBy('time_created')
+      .onSnapshot(callback);
   }
 
   async addTask(task) {
     return this.tasksReference.add({
       title: task.title,
       completed: task.completed,
-      time_created: this.firebase.firestore.FieldValue.serverTimestamp()
-    });  
+      time_created: this.getCurrentTimestamp(),
+      from_scheduled_task: false
+    });
   }
 
   async updateTask(editedTask) {
@@ -101,7 +106,8 @@ class FirebaseHelper {
       {
         title: editedTask.title,
         time_created: editedTask.time_created,
-        completed: editedTask.completed
+        completed: editedTask.completed,
+        time_completed: editedTask.time_completed
       }
     );
   };
@@ -109,6 +115,14 @@ class FirebaseHelper {
   async destroyTask(task) {
     return this.tasksReference.doc(task.id).delete();
   };
+
+  getStartOfTodayTimestamp() {
+    return this.firebase.firestore.Timestamp.fromMillis(new Date().setHours(0, 0, 0, 0));
+  };
+
+  getCurrentTimestamp() {
+    return this.firebase.firestore.FieldValue.serverTimestamp();
+  }
 
 }
 

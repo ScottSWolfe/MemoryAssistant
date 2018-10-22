@@ -3,6 +3,8 @@ import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { View, CheckBox, Body } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 
+import { firebaseHelper } from '../api/firebaseHelper';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -22,9 +24,14 @@ const styles = StyleSheet.create({
 
 class TaskItem extends Component {
   onTaskItemToggle = (task, propAction) => {
+    let timeCompleted = null;
+    if (task.completed === false) {
+      timeCompleted = firebaseHelper.getCurrentTimestamp();
+    }
     propAction({
       ...task,
       completed: !task.completed,
+      time_completed: timeCompleted,
     });
   };
 
