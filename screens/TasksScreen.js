@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, KeyboardAvoidingView} from 'react';
 import {firebase, firestore, firebaseHelper} from '../api/firebaseHelper';
 import TasksContainer from '../components/TasksContainer';
 
