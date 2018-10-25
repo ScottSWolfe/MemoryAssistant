@@ -98,14 +98,16 @@ export default class EditTaskScheduleScreen extends Component {
     }
   }
 
-  onSave() {
+  async onSave() {
     let taskSchedule = this.getTaskScheduleFromState();
-    console.log(taskSchedule);
-    if (this.state.new_task_schedule) {      
-      firebaseHelper.addTaskSchedule(this.getTaskScheduleFromState());
+    if (this.state.new_task_schedule) {
+      let createdDoc = await firebaseHelper.addTaskSchedule(taskSchedule);
+      taskSchedule.id = createdDoc.id;
+      firebaseHelper.addTaskFromTaskSchedule(taskSchedule);
     }
     else {
-      firebaseHelper.updateTaskSchedule(this.getTaskScheduleFromState());
+      firebaseHelper.updateTaskSchedule(taskSchedule);
+      firebaseHelper.updateTaskFromTaskSchedule(taskSchedule);
     }
     this.props.navigation.navigate('TaskSchedules');
   }

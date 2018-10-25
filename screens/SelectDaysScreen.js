@@ -3,9 +3,9 @@ import { View, ScrollView, Text, TextInput, TouchableOpacity, Switch, StyleSheet
 
 import Colors from '../constants/Colors';
 import Divider from '../components/Divider';
+import daysOfWeek from '../constants/Days';
 
-
-const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+//const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 export default class SelectDaysScreen extends Component {
 
@@ -34,7 +34,6 @@ export default class SelectDaysScreen extends Component {
   componentDidMount() {
     this.notifyParent = this.props.navigation.getParam('update', null);
     let days = this.props.navigation.getParam('days', []);
-    console.log('days: ' + days);
     this.setState({
       daysSelected: days
     });

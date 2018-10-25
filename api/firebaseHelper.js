@@ -1,6 +1,10 @@
 import firebase from 'firebase';
+
 import ApiKeys from '../constants/ApiKeys';
+import Days from '../constants/Days';
+
 require("firebase/firestore");
+
 
 // initialize firebase
 firebase.initializeApp(ApiKeys.FirebaseConfig);
@@ -109,11 +113,19 @@ class FirebaseHelper {
   }
 
   async addTask(task) {
+    let from_scheduled_task = false;
+    let source = null;
+    if (task.from_scheduled_task) {
+      from_scheduled_task = task.from_scheduled_task;
+      source = task.source;
+    }
+
     return this.tasksReference.add({
       title: task.title,
       completed: task.completed,
       time_created: this.getCurrentTimestamp(),
-      from_scheduled_task: false
+      from_scheduled_task: from_scheduled_task,
+      source: source,
     });
   }
 
@@ -150,8 +162,6 @@ class FirebaseHelper {
   }
 
   async updateTaskSchedule(editedTaskSchedule) {
-    console.log('updateTaskSchedule');
-    console.log(editedTaskSchedule);
     return this.taskSchedulesReference.doc(editedTaskSchedule.id).update(
       {
         title: editedTaskSchedule.title,
@@ -172,6 +182,84 @@ class FirebaseHelper {
   async destroyTaskSchedule(taskSchedule) {
     return this.taskSchedulesReference.doc(taskSchedule.id).delete();
   };
+
+  async addTaskFromTaskSchedule(taskSchedule) {
+    // check if new taskSchedule is one-time task for today
+    if (taskSchedule.repeat === false && taskSchedule.date !== null) {
+      let scheduledDate = new Date(taskSchedule.date); scheduledDate.setHours(0, 0, 0, 0);
+      let today = new Date(); today.setHours(0, 0, 0, 0);
+      if (scheduledDate.valueOf() === today.valueOf()) {
+        this.addTask({
+          title: taskSchedule.title,
+          completed: false,
+          from_scheduled_task: true,
+          source: taskSchedule.id,
+        });
+      }
+    }
+
+    // check if new taskSchedule repeats on today
+    if (taskSchedule.repeat === true) {
+      let today = Days[new Date().getDay()];
+      if (taskSchedule.days.indexOf(today) >= 0) {
+        this.addTask({
+          title: taskSchedule.title,
+          completed: false,
+          from_scheduled_task: true,
+          source: taskSchedule.id,
+        });
+      }
+    }
+  }
+
+  async updateTaskFromTaskSchedule(editedTaskSchedule) {
+    let snapshot = await this.tasksReference.where('source', '==', editedTaskSchedule.id).get();
+
+    // if a task created from this task schedule already exists
+    if (!snapshot.empty) {
+      let id = snapshot.docs[0].id;
+      let data = snapshot.docs[0].data();
+
+      // check if the task no longer should display for today
+      if (editedTaskSchedule.repeat === false && editedTaskSchedule.date === null) {
+        return this.destroyTask({id: id});
+      }
+      else if (editedTaskSchedule.repeat === false && editedTaskSchedule.date !== null) {
+        let scheduledDate = new Date(editedTaskSchedule.date); scheduledDate.setHours(0, 0, 0, 0);
+        let today = new Date(); today.setHours(0, 0, 0, 0);
+        if (scheduledDate.valueOf() !== today.valueOf()) {
+          return this.destroyTask({id: id});
+        }
+      }
+      else if (editedTaskSchedule.repeat === true) {
+        let today = Days[new Date().getDay()];
+        if (editedTaskSchedule.days.indexOf(today) < 0) {
+          return this.destroyTask({id: id})
+        }
+      }
+
+      // if it should still display today, update its fields
+      let time_completed = null;
+      if (data.time_completed) {
+        time_completed = data.time_completed;
+      }
+      return this.updateTask({
+        id: id,
+        title: editedTaskSchedule.title,
+        time_created: data.time_created,
+        completed: data.completed,
+        time_completed: time_completed,
+        from_scheduled_task: data.from_scheduled_task,
+        source: data.source,
+      });
+      
+    }
+
+    // if a task created from this task schedule does not exist
+    else {
+      return this.addTaskFromTaskSchedule(editedTaskSchedule);
+    }
+  }
 
   getStartOfTodayTimestamp() {
     return this.firebase.firestore.Timestamp.fromMillis(new Date().setHours(0, 0, 0, 0));
