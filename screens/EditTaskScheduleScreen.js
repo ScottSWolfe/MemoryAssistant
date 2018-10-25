@@ -241,24 +241,30 @@ export default class EditTaskScheduleScreen extends Component {
 
         <Divider/>
 
-        <View>
-          <TouchableOpacity onPress={this._showReminderTimePicker} style={styles.row}>
-            <Text style={styles.settingsLabels}>
-              Reminder Time:
-            </Text>
-            <Text style={styles.userEnteredText} >
-              { this.state.reminder_time ? this.state.reminder_time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : null}
-            </Text>
-          </TouchableOpacity>
-          <DateTimePicker
-            mode={'time'}
-            isVisible={this.state.isReminderTimePickerVisible}
-            onConfirm={this._handleReminderTimePicked}
-            onCancel={this._hideReminderTimePicker}
-          />
-        </View>
-
-        <Divider/>
+        {
+          this.state.reminder ? (
+            <View>
+              <View>
+                <TouchableOpacity onPress={this._showReminderTimePicker} style={styles.row}>
+                  <Text style={styles.settingsLabels}>
+                    Reminder Time:
+                  </Text>
+                  <Text style={styles.userEnteredText} >
+                    { this.state.reminder_time ? this.state.reminder_time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : null}
+                  </Text>
+                </TouchableOpacity>
+                <DateTimePicker
+                  mode={'time'}
+                  isVisible={this.state.isReminderTimePickerVisible}
+                  onConfirm={this._handleReminderTimePicked}
+                  onCancel={this._hideReminderTimePicker}
+                />
+              </View>
+              <Divider/>
+            </View>
+          )
+          : null
+        }
 
         <View style={styles.row}>
           <Text style={styles.settingsLabels}>
@@ -272,23 +278,29 @@ export default class EditTaskScheduleScreen extends Component {
 
         <Divider/>
 
-        <View >
-          <TouchableOpacity style={styles.row} onPress={() => this._repeatTimesTextInput.focus()}>
-            <Text style={styles.settingsLabels}>
-              Repeat How Many Times
-            </Text>
-            <TextInput 
-              ref={component => this._repeatTimesTextInput = component}
-              style={styles.userEnteredText}
-              keyboardType = 'numeric'
-              onChangeText = {(text) => this.setState({ repeat_reminder_max_times: text })}
-            >
-              {this.state.repeat_reminder_max_times}
-            </TextInput>
-          </TouchableOpacity>
-        </View>
-
-        <Divider/>
+        {
+          this.state.repeat_reminder_if_uncomplete ? (
+            <View>
+              <View >
+                <TouchableOpacity style={styles.row} onPress={() => this._repeatTimesTextInput.focus()}>
+                  <Text style={styles.settingsLabels}>
+                    Repeat How Many Times
+                  </Text>
+                  <TextInput 
+                    ref={component => this._repeatTimesTextInput = component}
+                    style={styles.userEnteredText}
+                    keyboardType = 'numeric'
+                    onChangeText = {(text) => this.setState({ repeat_reminder_max_times: text })}
+                  >
+                    {this.state.repeat_reminder_max_times}
+                  </TextInput>
+                </TouchableOpacity>
+              </View>
+              <Divider/>
+            </View>
+          )
+          : null
+        }
 
         <View style={styles.row}>
           <Text style={styles.settingsLabels}>
@@ -302,24 +314,31 @@ export default class EditTaskScheduleScreen extends Component {
 
         <Divider/>
 
-        <View>
-          <TouchableOpacity onPress={this._showNotifyTimePicker} style={styles.row}>
-            <Text style={styles.settingsLabels}>
-              Notify Time:
-            </Text>
-            <Text style={styles.userEnteredText} >
-              { this.state.notify_caregiver_time ? this.state.notify_caregiver_time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : null}
-            </Text>
-          </TouchableOpacity>
-          <DateTimePicker
-            mode={'time'}
-            isVisible={this.state.isNotifyTimePickerVisible}
-            onConfirm={this._handleNotifyTimePicked}
-            onCancel={this._hideNotifyTimePicker}
-          />
-        </View>
-
-        <Divider/>
+        {
+          this.state.notify_caregiver_if_uncomplete ? (
+            <View>
+              <View>
+                <TouchableOpacity onPress={this._showNotifyTimePicker} style={styles.row}>
+                  <Text style={styles.settingsLabels}>
+                    Notify Time:
+                  </Text>
+                  <Text style={styles.userEnteredText} >
+                    { this.state.notify_caregiver_time ? this.state.notify_caregiver_time.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : null}
+                  </Text>
+                </TouchableOpacity>
+                <DateTimePicker
+                  mode={'time'}
+                  isVisible={this.state.isNotifyTimePickerVisible}
+                  onConfirm={this._handleNotifyTimePicked}
+                  onCancel={this._hideNotifyTimePicker}
+                />
+              </View>
+              <Divider/>
+            </View>
+          ) 
+          : null
+        }
+        
 
       </ScrollView>
     );
