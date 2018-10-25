@@ -161,6 +161,13 @@ export default class EditTaskScheduleScreen extends Component {
     return (
       <ScrollView style={{ flex: 1, backgroundColor: Colors.primaryBackground }}>
 
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionHeaderFont}>
+            Task
+          </Text>
+        </View>
+        <Divider/>
+
         <View >
           <TouchableOpacity style={styles.row} onPress={() => this._titleTextInput.focus()}>
             <Text style={styles.settingsLabels}>
@@ -229,6 +236,13 @@ export default class EditTaskScheduleScreen extends Component {
         ) : null
         }
 
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionHeaderFont}>
+            Patient Reminders
+          </Text>
+        </View>
+        <Divider/>
+
         <View style={styles.row}>
           <Text style={styles.settingsLabels}>
             Remind Patient
@@ -266,20 +280,26 @@ export default class EditTaskScheduleScreen extends Component {
           : null
         }
 
-        <View style={styles.row}>
-          <Text style={styles.settingsLabels}>
-            Repeat Reminder if Uncomplete
-          </Text>
-          <Switch
-            value={this.state.repeat_reminder_if_uncomplete}
-            onValueChange={(bool) => this.setState({ repeat_reminder_if_uncomplete: bool })}
-          />
-        </View>
-
-        <Divider/>
+        {
+          this.state.reminder ? (
+            <View>
+              <View style={styles.row}>
+                <Text style={styles.settingsLabels}>
+                  Repeat Reminder if Uncomplete
+                </Text>
+                <Switch
+                  value={this.state.repeat_reminder_if_uncomplete}
+                  onValueChange={(bool) => this.setState({ repeat_reminder_if_uncomplete: bool })}
+                />
+              </View>
+              <Divider/>
+            </View>
+          )
+          : null
+        }
 
         {
-          this.state.repeat_reminder_if_uncomplete ? (
+          this.state.repeat_reminder_if_uncomplete && this.state.reminder ? (
             <View>
               <View >
                 <TouchableOpacity style={styles.row} onPress={() => this._repeatTimesTextInput.focus()}>
@@ -301,6 +321,13 @@ export default class EditTaskScheduleScreen extends Component {
           )
           : null
         }
+
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionHeaderFont}>
+            Caregiver Notifications
+          </Text>
+        </View>
+        <Divider/>
 
         <View style={styles.row}>
           <Text style={styles.settingsLabels}>
@@ -365,4 +392,21 @@ const styles = StyleSheet.create({
     paddingTop: 15,
     paddingBottom: 15,
   },
+  sectionHeader: {
+    flex: 1,
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingTop: 30,
+    paddingBottom: 5,
+    backgroundColor: Colors.secondary,
+  },
+  sectionHeaderFont: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: Colors.primary,
+  }
 });
