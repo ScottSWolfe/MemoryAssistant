@@ -1,9 +1,16 @@
 import React from 'react';
+
 import {firebaseHelper} from '../api/firebaseHelper';
 import TasksContainer from '../components/TasksContainer';
+import Colors from '../constants/Colors';
+
 
 export default class TasksScreen extends React.Component {
   
+  static navigationOptions = {
+    title: 'Today\'s Tasks',
+  }
+
   state = {
     tasks: []
   }
@@ -69,6 +76,7 @@ export default class TasksScreen extends React.Component {
   render() {
     return (
       <TasksContainer 
+        style={{ backgroundColor: Colors.primaryBackground }}
         screen={this.props.navigation.state.key} 
         tasks={this.state.tasks} 
         tasksReference={this.tasksReference}

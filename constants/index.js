@@ -1,5 +1,6 @@
 export default {
-  TODAY: 'Today',
+  TODAY: 'Today\'s Tasks',
   ACTIVE: 'Active',
   COMPLETED: 'Completed',
+  SCHEDULE: 'Schedule Tasks',
 };

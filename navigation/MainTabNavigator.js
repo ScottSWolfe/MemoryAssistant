@@ -1,27 +1,27 @@
 import React from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
-import { TabNavigator, TabBarBottom } from 'react-navigation';
+import { createBottomTabNavigator, TabBarBottom } from 'react-navigation';
 
 import Colors from '../constants/Colors';
 import CONSTANTS from '../constants/index';
-import TasksScreen from '../screens/TasksScreen';
+import TasksNavigator from '../navigation/TasksNavigator';
+import TaskSchedulesNavigator from '../navigation/TaskSchedulesNavigator';
 
 
 const commonNavigationOptions = ({ navigation }) => ({
-  header: null,
   title: navigation.state.routeName,
 });
 
-const routeOptions = {
-  screen: TasksScreen,
-  navigationOptions: commonNavigationOptions,
-};
-
-const TabNav = TabNavigator(
+const TabNav = createBottomTabNavigator(
   {
-    [CONSTANTS.TODAY]: routeOptions,
-    [CONSTANTS.ACTIVE]: routeOptions,
-    [CONSTANTS.COMPLETED]: routeOptions,
+    [CONSTANTS.TODAY]: {
+      screen: TasksNavigator,
+      navigationOptions: commonNavigationOptions,
+    },
+    [CONSTANTS.SCHEDULE]: { 
+      screen: TaskSchedulesNavigator,
+      navigationOptions: commonNavigationOptions,
+    },
   },
   {
     navigationOptions: ({ navigation }) => ({
@@ -35,7 +35,7 @@ const TabNav = TabNavigator(
           case CONSTANTS.ACTIVE:
             iconName = 'filter-center-focus';
             break;
-          case CONSTANTS.COMPLETED:
+          case CONSTANTS.SCHEDULE:
             iconName = 'playlist-add-check';
         }
         return (
@@ -47,11 +47,8 @@ const TabNav = TabNavigator(
           />
         );
       },
+      title: 'The Title',
     }),
-    tabBarComponent: TabBarBottom,
-    tabBarPosition: 'bottom',
-    animationEnabled: true,
-    swipeEnabled: true,
   },
 );
 

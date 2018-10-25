@@ -19,13 +19,17 @@ class FirebaseHelper {
 
     this.userId = null;
     this.tasksReference = null;
-      
+    this.taskSchedulesReference = null;
+
     this.logout = this.logout.bind(this);
     this.initializeUserData = this.initializeUserData.bind(this);
     this.subscribeToTasksCollectionUpdates = this.subscribeToTasksCollectionUpdates.bind(this);
     this.addTask = this.addTask.bind(this);
     this.updateTask = this.updateTask.bind(this);
     this.destroyTask = this.destroyTask.bind(this);
+    this.addTaskSchedule = this.addTaskSchedule.bind(this);
+    this.updateTaskSchedule = this.updateTaskSchedule.bind(this);
+    this.destroyTaskSchedule = this.destroyTaskSchedule.bind(this);
     this.getCurrentTimestamp = this.getCurrentTimestamp.bind(this);
     this.getStartOfTodayTimestamp = this.getStartOfTodayTimestamp.bind(this);
   }
@@ -48,7 +52,9 @@ class FirebaseHelper {
 
   async initializeUserData() {
     this.userId = this.getCurrentUserId();
-    this.tasksReference = await this.getTasksCollectionReference();
+    this.groupId = await this.getUsersGroupId();
+    this.tasksReference = this.getTasksCollectionReference(this.groupId);
+    this.taskSchedulesReference = this.getTaskSchedulesCollectionReference(this.groupId);
   }
 
   getCurrentUserId() {
@@ -56,9 +62,12 @@ class FirebaseHelper {
     return user ? user.uid : null;
   }
 
-  async getTasksCollectionReference() {
-    const groupId = await this.getUsersGroupId();
+  getTasksCollectionReference(groupId) {
     return this.firestore.collection('groups').doc(groupId).collection('tasks');
+  }
+
+  getTaskSchedulesCollectionReference(groupId) {
+    return this.firestore.collection('groups').doc(groupId).collection('task_schedules');
   }
 
   async getUsersGroupId() {
@@ -93,6 +102,12 @@ class FirebaseHelper {
       .onSnapshot(callback);
   }
 
+  async subscribeToTaskSchedulesCollectionUpdates(callback) {
+    return this.taskSchedulesReference
+      .orderBy('time_created')
+      .onSnapshot(callback);
+  }
+
   async addTask(task) {
     return this.tasksReference.add({
       title: task.title,
@@ -117,12 +132,67 @@ class FirebaseHelper {
     return this.tasksReference.doc(task.id).delete();
   };
 
+  async addTaskSchedule(taskSchedule) {
+    return this.taskSchedulesReference.add({
+      title: taskSchedule.title,
+      time_created: this.getCurrentTimestamp(),
+      repeat: taskSchedule.repeat,
+      date: taskSchedule.date,
+      days: taskSchedule.days,
+      reminder: taskSchedule.reminder,
+      reminder_time: taskSchedule.reminder_time,
+      repeat_reminder_if_uncomplete: taskSchedule.repeat_reminder_if_uncomplete,
+      repeat_reminder_interval: taskSchedule.repeat_reminder_interval,
+      repeat_reminder_max_times: taskSchedule.repeat_reminder_max_times,
+      notify_caregiver_if_uncomplete: taskSchedule.notify_caregiver_if_uncomplete,
+      notify_caregiver_time: taskSchedule.notify_caregiver_time,
+    });
+  }
+
+  async updateTaskSchedule(editedTaskSchedule) {
+    console.log('updateTaskSchedule');
+    console.log(editedTaskSchedule);
+    return this.taskSchedulesReference.doc(editedTaskSchedule.id).update(
+      {
+        title: editedTaskSchedule.title,
+        repeat: editedTaskSchedule.repeat,
+        date: this.changeDateToFirestoreTimestamp(editedTaskSchedule.date),
+        days: editedTaskSchedule.days,
+        reminder: editedTaskSchedule.reminder,
+        reminder_time: this.changeDateToFirestoreTimestamp(editedTaskSchedule.reminder_time),
+        repeat_reminder_if_uncomplete: editedTaskSchedule.repeat_reminder_if_uncomplete,
+        repeat_reminder_interval: editedTaskSchedule.repeat_reminder_interval,
+        repeat_reminder_max_times: editedTaskSchedule.repeat_reminder_max_times,
+        notify_caregiver_if_uncomplete: editedTaskSchedule.notify_caregiver_if_uncomplete,
+        notify_caregiver_time: this.changeDateToFirestoreTimestamp(editedTaskSchedule.notify_caregiver_time),
+        }
+    );
+  };
+
+  async destroyTaskSchedule(taskSchedule) {
+    return this.taskSchedulesReference.doc(taskSchedule.id).delete();
+  };
+
   getStartOfTodayTimestamp() {
     return this.firebase.firestore.Timestamp.fromMillis(new Date().setHours(0, 0, 0, 0));
   };
 
   getCurrentTimestamp() {
     return this.firebase.firestore.FieldValue.serverTimestamp();
+  }
+
+  changeDateToFirestoreTimestamp(date) {
+    if (!date) {
+      return null;
+    }
+    return this.firebase.firestore.Timestamp.fromDate(date);
+  }
+
+  changeFirestoreTimestampToDate(timestamp) {
+    if (!timestamp) {
+      return null;
+    }
+    return timestamp.toDate();
   }
 
 }

@@ -5,7 +5,6 @@ import { View } from 'native-base';
 import { firebaseHelper } from '../api/firebaseHelper';
 import CONSTANTS from '../constants';
 import COLORS from '../constants/Colors';
-import Header from '../components/Header';
 import AddTask from '../components/AddTask';
 import AddTaskButton from '../components/AddTaskButton';
 import TaskItem from '../components/TaskItem';
@@ -45,7 +44,7 @@ export default class TasksContainer extends React.Component {
   render() {
     const isAndroid = Platform.OS === 'android';
     return (
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" enabled>
+      <KeyboardAvoidingView style={{ flex: 1, backgroundColor: COLORS.primaryBackground }} behavior="padding" enabled>
         {isAndroid ? (
           <StatusBar backgroundColor={COLORS.primary} barStyle="light-content" />
         ) : (
@@ -58,6 +57,7 @@ export default class TasksContainer extends React.Component {
             renderItem={({ item }) => (
               <TaskItem task={item} onUpdate={firebaseHelper.updateTask} onDelete={firebaseHelper.destroyTask} />
             )}
+            keyExtractor={(item, index) => item.id}
           />
           {this.state.addingTask ? (
             <View style={styles.row}>

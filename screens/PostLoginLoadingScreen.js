@@ -6,8 +6,8 @@ export default class PostLoginLoadingScreen extends React.Component {
 
   componentDidMount() {
     this.loadUserData()
-      .then(() => { this.props.navigation.navigate('Main') })
-      .catch((error) => { console.log(error) });
+      .then(() => this.props.navigation.navigate('Main'))
+      .catch((error) => console.log(error));
   }
 
   async loadUserData() {
