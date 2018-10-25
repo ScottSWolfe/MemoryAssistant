@@ -68,7 +68,7 @@ class AddTask extends Component {
             onChangeText={changedTitle => this.setStateUtil('title', changedTitle)}
             value={title}
             autoCorrect={false}
-            autoCapitalize="none"
+            autoCapitalize="sentences"
             onBlur={onBlur}
           />
         </Body>

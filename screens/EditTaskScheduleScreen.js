@@ -177,7 +177,9 @@ export default class EditTaskScheduleScreen extends Component {
             </Text>
             <TextInput 
               style={styles.userEnteredText} 
+              underlineColorAndroid="transparent"
               placeholder="Enter Title" 
+              autoCapitalize="sentences"
               ref={component => this._titleTextInput = component}
               onChangeText={(text) => this.setState({ title: text })}
             >
@@ -310,6 +312,7 @@ export default class EditTaskScheduleScreen extends Component {
                   </Text>
                   <TextInput 
                     ref={component => this._repeatTimesTextInput = component}
+                    underlineColorAndroid="transparent"
                     style={styles.userEnteredText}
                     keyboardType = 'numeric'
                     onChangeText = {(text) => this.setState({ repeat_reminder_max_times: text })}
