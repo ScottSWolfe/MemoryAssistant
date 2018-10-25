@@ -34,6 +34,7 @@ class FirebaseHelper {
     this.addTaskSchedule = this.addTaskSchedule.bind(this);
     this.updateTaskSchedule = this.updateTaskSchedule.bind(this);
     this.destroyTaskSchedule = this.destroyTaskSchedule.bind(this);
+    this.destroyTasksCreatedFromTaskSchedule = this.destroyTasksCreatedFromTaskSchedule.bind(this);
     this.getCurrentTimestamp = this.getCurrentTimestamp.bind(this);
     this.getStartOfTodayTimestamp = this.getStartOfTodayTimestamp.bind(this);
   }
@@ -258,6 +259,13 @@ class FirebaseHelper {
     // if a task created from this task schedule does not exist
     else {
       return this.addTaskFromTaskSchedule(editedTaskSchedule);
+    }
+  }
+
+  async destroyTasksCreatedFromTaskSchedule(taskScheduleId) {
+    let snapshot = await this.tasksReference.where('source', '==', taskScheduleId).get();
+    if (!snapshot.empty) {
+      this.destroyTask({id: snapshot.docs[0].id});
     }
   }
 

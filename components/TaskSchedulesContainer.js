@@ -19,6 +19,16 @@ const styles = StyleSheet.create({
 });
 
 export default class TaskSchedulesContainer extends React.Component {
+  constructor(props) {
+    super(props);
+    this.onDelete = this.onDelete.bind(this);
+  }
+
+  onDelete(taskSchedule) {
+    firebaseHelper.destroyTaskSchedule(taskSchedule);
+    firebaseHelper.destroyTasksCreatedFromTaskSchedule(taskSchedule.id);
+  }
+  
   render() {
     const isAndroid = Platform.OS === 'android';
     return (
@@ -33,7 +43,7 @@ export default class TaskSchedulesContainer extends React.Component {
             style={{ width: '100%', top: 15, }}
             data={this.props.taskSchedules}
             renderItem={({ item }) => (
-              <TaskScheduleItem taskSchedule={item} onDelete={firebaseHelper.destroyTaskSchedule} navigation={this.props.navigation} />
+              <TaskScheduleItem taskSchedule={item} onDelete={(item) => this.onDelete(item)} navigation={this.props.navigation} />
             )}
             keyExtractor={(item, index) => item.id}
           />
