@@ -1,14 +1,11 @@
 import React from 'react';
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
-import { AppLoading, Asset, Font, Icon } from 'expo';
+import { Platform, StatusBar, StyleSheet,  View, ScrollView, Text, TextInput, TouchableOpacity, Switch } from 'react-native';
 import AppNavigator from './navigation/AppNavigator';
+import SplashScreen from 'react-native-splash-screen'
+
 
 
 export default class App extends React.Component {
-  
-  state = {
-    isLoadingComplete: false,
-  };
 
   constructor(props) {
     super(props);
@@ -16,54 +13,27 @@ export default class App extends React.Component {
   }
 
   render() {
-    if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
-      return (
-        <AppLoading
-          startAsync={this._loadResourcesAsync}
-          onError={this._handleLoadingError}
-          onFinish={this._handleFinishLoading}
-        />
-      );
-    } else {
-      return (
+    return (
         <View style={styles.container}>
           {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
           <AppNavigator />
         </View>
       );
     }
-  }
-
-  _loadResourcesAsync = async () => {
-    return Promise.all([
-      Asset.loadAsync([
-        require('./assets/images/robot-dev.png'),
-        require('./assets/images/robot-prod.png'),
-      ]),
-      Font.loadAsync({
-        ...Icon.Ionicons.font,
-        'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),
-      }),
-      Expo.Font.loadAsync({
-        Roboto: require('native-base/Fonts/Roboto.ttf'),
-        Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
-        Ionicons: require('native-base/Fonts/Ionicons.ttf'),
-      })
-    ]);
-  };
-
-  _handleLoadingError = error => {
-    console.warn(error);
-  };
-
-  _handleFinishLoading = () => {
-    this.setState({ isLoadingComplete: true });
-  };
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-});
+    container: {
+        flex: 1,
+        backgroundColor: '#f3f2f2',
+        marginTop: 30
+    },
+    item: {
+        fontSize: 20,
+    },
+    line: {
+        flex: 1,
+        height: 0.3,
+        backgroundColor: 'darkgray',
+    },
+})

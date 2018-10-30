@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { TextInput, TouchableOpacity } from 'react-native';
 import { View, Body, CheckBox } from 'native-base';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from 'react-native-vector-icons/Ionicons';
 
 const defaultProps = {
   task: {

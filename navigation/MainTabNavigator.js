@@ -1,5 +1,5 @@
 import React from 'react';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Icon } from 'react-native-vector-icons';
 import { createBottomTabNavigator, TabBarBottom } from 'react-navigation';
 
 import Colors from '../constants/Colors';
@@ -39,7 +39,7 @@ const TabNav = createBottomTabNavigator(
             iconName = 'playlist-add-check';
         }
         return (
-          <MaterialIcons
+          <Icon
             name={iconName}
             size={28}
             style={{ marginBottom: -3 }}

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Header, Body, Title } from 'native-base';
 import { View, Image, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from 'react-native-vector-icons/Ionicons';
 
 import COLORS from '../constants/Colors';
 import { firebaseHelper } from '../api/firebaseHelper';
