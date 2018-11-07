@@ -6,5 +6,5 @@ Mobile App developed for a class project to be the companion of an Alexa Skill t
 * Install React Native and set up development environment (Check out the Building Projects with Native Code tab at https://facebook.github.io/react-native/docs/getting-started)
 * Clone the repository to a local directory
 * Put the firebase google-services.json file into the ./android/app directory
-* Run `npm install` in the directory
+* Run `npm install` in the root directory
 * Run `react-native run-android` or `react-native run-ios`
