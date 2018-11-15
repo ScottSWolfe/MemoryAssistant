@@ -1,23 +1,18 @@
 import firebase from 'react-native-firebase';
 
-
-// initialize firestore
-var firestore = firebase.firestore();
-// react-native-firebase does not currently support firestore timestamps
-// const settings = { timestampsInSnapshots: true};
-// firestore.settings(settings);
+import { unfinishedTasksChannel } from '../constants/Channels';
 
 
 class FirebaseHelper {
 
   constructor() {
     this.firebase = firebase;
-	  this.firestore = firestore;
+	  this.firestore = firebase.firestore();;
 
     this.userId = null;
     this.tasksReference = null;
     this.taskSchedulesReference = null;
-    
+
     this.logout = this.logout.bind(this);
     this.initializeUserData = this.initializeUserData.bind(this);
     this.subscribeToTasksCollectionUpdates = this.subscribeToTasksCollectionUpdates.bind(this);
@@ -29,6 +24,9 @@ class FirebaseHelper {
     this.destroyTaskSchedule = this.destroyTaskSchedule.bind(this);
     this.destroyTasksCreatedFromTaskSchedule = this.destroyTasksCreatedFromTaskSchedule.bind(this);
     this.getCurrentTimestamp = this.getCurrentTimestamp.bind(this);
+    this.setupNotificationListeners = this.setupNotificationListeners.bind(this);
+
+    this.initializeNotificationChannel(unfinishedTasksChannel.id, unfinishedTasksChannel.name, unfinishedTasksChannel.description);
   }
 
   async signUp(email, password) {
@@ -205,6 +203,86 @@ class FirebaseHelper {
     // return timestamp.toDate();
 
     return timestamp;
+  }
+
+  async checkAndRequestNotificationPermissions() {
+    let enabled = this.checkNotificationPermissions();
+    if (!enabled) {
+      enabled = requestNotificationPermissions();
+    }
+    return enabled;
+  }
+
+  async checkNotificationPermissions() {
+    return await this.firebase.messaging().hasPermission();
+  }
+
+  async requestNotificationPermissions() {
+    try {
+      await this.firebase.messaging().requestPermission();
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  initializeNotificationChannel(channelId, channelName, description) {
+    const channel = new firebase.notifications.Android.Channel(channelId, channelName, firebase.notifications.Android.Importance.Max)
+      .setDescription(description);
+    firebase.notifications().android.createChannel(channel);
+  }
+
+  setupNotificationListeners() {
+    this.firebase.notifications().onNotification(this.onNotification);
+    this.firebase.notifications().onNotificationDisplayed(this.onNotificationDisplayed);
+    this.firebase.notifications().onNotificationOpened(this.onNotificationOpened);
+  }
+
+  onNotification(notification) {
+    console.log("onNotification triggered");
+    firebase.notifications().displayNotification(notification);
+  }
+
+  onNotificationDisplayed(notification) {
+    console.log("onNotificationDisplayed triggered");
+  }
+
+  onNotificationOpened(notification) {
+    console.log("onNotificationOpened triggered");
+  }
+
+  displayNotification(title, body, channelId) {
+    const notification = this.createNotification(title, body, channelId);
+    firebase.notifications().displayNotification(notification);
+    return notification.id;
+  }
+  
+  scheduleNotification(title, body, channelId, date) {
+    const notification = this.createNotification(title, body, channelId);
+    firebase.notifications().scheduleNotification(notification, {fireDate: date.getTime()});
+    return notification.id;
+  }
+
+  createNotification(title, body, channelId) {
+    const notificationId = title; // todo: determine how to generate notification id
+
+    // set common properties
+    const notification = new firebase.notifications.Notification()
+      .setNotificationId(notificationId)
+      .setTitle(title)
+      .setBody(body)
+      .setSound('default');
+
+    // set android specific properties
+    notification.android.setChannelId(channelId)
+      .android.setPriority(firebase.notifications.Android.Priority.High)
+      .android.setVibrate([0, 1000, 1000, 1000, 1000]);
+
+    return notification;
+  }
+
+  unscheduleNotification(notificationId) {
+    // todo: implement
   }
 
 }

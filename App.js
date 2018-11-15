@@ -1,5 +1,6 @@
 import React from 'react';
-import { Platform, StatusBar, StyleSheet,  View, ScrollView, Text, TextInput, TouchableOpacity, Switch } from 'react-native';
+import { Platform, StatusBar, StyleSheet,  View } from 'react-native';
+
 import AppNavigator from './navigation/AppNavigator';
 
 
@@ -17,7 +18,8 @@ export default class App extends React.Component {
           <AppNavigator />
         </View>
       );
-    }
+  }
+
 }
 
 const styles = StyleSheet.create({

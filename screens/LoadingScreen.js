@@ -5,6 +5,7 @@ import { firebaseHelper } from '../api/firebaseHelper';
 export default class Loading extends React.Component {
 
   componentDidMount() {
+    firebaseHelper.setupNotificationListeners();
     firebaseHelper.onAuthStateChanged(user => {
       this.props.navigation.navigate(user ? 'PostLoginLoading' : 'SignUp');
     });

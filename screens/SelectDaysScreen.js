@@ -5,7 +5,6 @@ import Colors from '../constants/Colors';
 import Divider from '../components/Divider';
 import daysOfWeek from '../constants/Days';
 
-//const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 export default class SelectDaysScreen extends Component {
 
