@@ -213,6 +213,10 @@ class FirebaseHelper {
   async destroyReminder(id) {
     return this.remindersReferenece.doc(id).delete();
   }
+  
+  async updateReminder(id, fields) {
+    return this.remindersReferenece.doc(id).update(fields);
+  }
 
   getCurrentTimestamp() {
     return this.firebase.firestore.FieldValue.serverTimestamp();
@@ -273,7 +277,7 @@ class FirebaseHelper {
 
   onNotification(notification) {
     firebase.notifications().displayNotification(notification);
-    this.destroyReminder(notification.notificationId);
+    this.updateReminder(notification.notificationId, { delivered: true });
   }
 
   onNotificationDisplayed(notification) {
@@ -333,10 +337,15 @@ class FirebaseHelper {
 
     // schedule new notifications
     querySnapshot.forEach((doc) => {
-      const { title, time, caregiver_notification } = doc.data();
+      const { title, time, caregiver_notification, delivered } = doc.data();
       
-      // only handling caregiver notifications on mobile app
+      // only handle caregiver notifications on mobile app
       if (!caregiver_notification) {
+        return;
+      }
+
+      // don't schedule notifications that have already been delivered
+      if (delivered === true) {
         return;
       }
 
@@ -347,7 +356,7 @@ class FirebaseHelper {
       notifyTime.setSeconds(storedDate.getSeconds());
 
       // schedule notification
-      const message = 'The task "' + title + '" has not been completed.';
+      const message = 'This task has not been completed.';
       this.scheduleNotification(doc.id, title, message, unfinishedTasksChannel.id, notifyTime);
     });
 
