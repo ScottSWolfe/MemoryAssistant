@@ -1,5 +1,4 @@
 import firebase from 'react-native-firebase';
-
 import { unfinishedTasksChannel } from '../constants/Channels';
 
 
@@ -12,10 +11,13 @@ class FirebaseHelper {
     this.userId = null;
     this.tasksReference = null;
     this.taskSchedulesReference = null;
+    this.remindersReferenece = null;
 
     this.logout = this.logout.bind(this);
     this.initializeUserData = this.initializeUserData.bind(this);
     this.subscribeToTasksCollectionUpdates = this.subscribeToTasksCollectionUpdates.bind(this);
+    this.subscribeToTaskSchedulesCollectionUpdates = this.subscribeToTaskSchedulesCollectionUpdates.bind(this);
+    this.subscribeToRemindersCollectionUpdates = this.subscribeToRemindersCollectionUpdates.bind(this);
     this.addTask = this.addTask.bind(this);
     this.updateTask = this.updateTask.bind(this);
     this.destroyTask = this.destroyTask.bind(this);
@@ -25,8 +27,9 @@ class FirebaseHelper {
     this.destroyTasksCreatedFromTaskSchedule = this.destroyTasksCreatedFromTaskSchedule.bind(this);
     this.getCurrentTimestamp = this.getCurrentTimestamp.bind(this);
     this.setupNotificationListeners = this.setupNotificationListeners.bind(this);
-
-    this.initializeNotificationChannel(unfinishedTasksChannel.id, unfinishedTasksChannel.name, unfinishedTasksChannel.description);
+    this.initializeLocalReminders = this.initializeLocalReminders.bind(this);
+    this.onRemindersCollectionUpdate = this.onRemindersCollectionUpdate.bind(this);
+    this.onNotification = this.onNotification.bind(this);
   }
 
   async signUp(email, password) {
@@ -50,6 +53,18 @@ class FirebaseHelper {
     this.groupId = await this.getUsersGroupId();
     this.tasksReference = this.getTasksCollectionReference(this.groupId);
     this.taskSchedulesReference = this.getTaskSchedulesCollectionReference(this.groupId);
+
+    this.initializeLocalReminders();
+  }
+
+  /*
+   * Temporary for local testing of notifications.
+   * This functionality will be implemented in a 
+   * remote server.
+   */
+  async initializeLocalReminders() {
+    this.remindersReferenece = await this.getRemindersReference(this.groupId);
+    this.subscribeToRemindersCollectionUpdates(this.onRemindersCollectionUpdate);
   }
 
   getCurrentUserId() {
@@ -65,7 +80,15 @@ class FirebaseHelper {
     return this.firestore.collection('groups').doc(groupId).collection('task_schedules');
   }
 
+  getRemindersReference(groupId) {
+    return this.firestore.collection('groups').doc(groupId).collection('reminders');
+  }
+
   async getUsersGroupId() {
+    if (this.groupId) {
+      return this.groupId;
+    }
+
     const snapshot = await this.findUsersGroup();
     let groupId;
     if (snapshot.empty) {
@@ -100,6 +123,12 @@ class FirebaseHelper {
   async subscribeToTaskSchedulesCollectionUpdates(callback) {
     return this.taskSchedulesReference
       .orderBy('time_created')
+      .onSnapshot(callback);
+  }
+
+  async subscribeToRemindersCollectionUpdates(callback) {
+    return this.remindersReferenece
+      .orderBy('time')
       .onSnapshot(callback);
   }
 
@@ -181,6 +210,10 @@ class FirebaseHelper {
     }
   }
 
+  async destroyReminder(id) {
+    return this.remindersReferenece.doc(id).delete();
+  }
+
   getCurrentTimestamp() {
     return this.firebase.firestore.FieldValue.serverTimestamp();
   }
@@ -239,36 +272,40 @@ class FirebaseHelper {
   }
 
   onNotification(notification) {
-    console.log("onNotification triggered");
     firebase.notifications().displayNotification(notification);
+    this.destroyReminder(notification.notificationId);
   }
 
   onNotificationDisplayed(notification) {
-    console.log("onNotificationDisplayed triggered");
+    /* 
+     * Implement any special functionality for when the
+     * notification is displayed to the user.
+     */
   }
 
   onNotificationOpened(notification) {
-    console.log("onNotificationOpened triggered");
+    /* 
+     * Implement any special functionality for when app
+     * is in background and is brought to foreground by
+     * user touching the notification.
+     */
   }
 
-  displayNotification(title, body, channelId) {
-    const notification = this.createNotification(title, body, channelId);
+  displayNotification(id, title, body, channelId) {
+    const notification = this.createNotification(id, title, body, channelId);
     firebase.notifications().displayNotification(notification);
     return notification.id;
   }
   
-  scheduleNotification(title, body, channelId, date) {
-    const notification = this.createNotification(title, body, channelId);
+  scheduleNotification(id, title, body, channelId, date) {
+    const notification = this.createNotification(id, title, body, channelId);
     firebase.notifications().scheduleNotification(notification, {fireDate: date.getTime()});
-    return notification.id;
   }
 
-  createNotification(title, body, channelId) {
-    const notificationId = title; // todo: determine how to generate notification id
-
+  createNotification(id, title, body, channelId) {
     // set common properties
     const notification = new firebase.notifications.Notification()
-      .setNotificationId(notificationId)
+      .setNotificationId(id)
       .setTitle(title)
       .setBody(body)
       .setSound('default');
@@ -281,8 +318,39 @@ class FirebaseHelper {
     return notification;
   }
 
-  unscheduleNotification(notificationId) {
-    // todo: implement
+  unscheduleNotification(id) {
+    this.firebase.notifications().cancelNotification(id);
+  }
+
+  /*
+   * Temporary implementation for local testing.
+   * This functionality will be implemented in
+   * a remote server.
+   */
+  onRemindersCollectionUpdate(querySnapshot) {
+    // unschedule existing notifications
+    this.firebase.notifications().cancelAllNotifications();
+
+    // schedule new notifications
+    querySnapshot.forEach((doc) => {
+      const { title, time, caregiver_notification } = doc.data();
+      
+      // only handling caregiver notifications on mobile app
+      if (!caregiver_notification) {
+        return;
+      }
+
+      // only use time portion of date
+      let storedDate = this.changeFirestoreTimestampToDate(time);
+      let notifyTime = new Date();
+      notifyTime.setMinutes(storedDate.getMinutes());
+      notifyTime.setSeconds(storedDate.getSeconds());
+
+      // schedule notification
+      const message = 'The task "' + title + '" has not been completed.';
+      this.scheduleNotification(doc.id, title, message, unfinishedTasksChannel.id, notifyTime);
+    });
+
   }
 
 }
