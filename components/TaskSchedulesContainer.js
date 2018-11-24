@@ -1,10 +1,11 @@
 import React from 'react';
-import { ScrollView, FlatList, StatusBar, Platform, KeyboardAvoidingView } from 'react-native';
+import { ScrollView, FlatList, StatusBar, Platform, KeyboardAvoidingView, View } from 'react-native';
 
 import { firebaseHelper } from '../api/firebaseHelper';
 import Colors from '../constants/Colors';
 import AddTaskButton from '../components/AddTaskButton';
 import TaskScheduleItem from '../components/TaskScheduleItem';
+import Divider from '../components/Divider';
 
 
 export default class TaskSchedulesContainer extends React.Component {
@@ -38,7 +39,10 @@ export default class TaskSchedulesContainer extends React.Component {
             style={{ width: '100%', top: 15, }}
             data={this.props.taskSchedules}
             renderItem={({ item }) => (
-              <TaskScheduleItem taskSchedule={item} onDelete={(item) => this.onDelete(item)} navigation={this.props.navigation} />
+              <View>
+                <TaskScheduleItem taskSchedule={item} onDelete={(item) => this.onDelete(item)} navigation={this.props.navigation} />
+                <Divider />
+              </View>
             )}
             keyExtractor={(item, index) => item.id}
           />

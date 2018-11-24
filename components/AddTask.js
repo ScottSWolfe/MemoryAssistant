@@ -72,6 +72,7 @@ class AddTask extends Component {
             autoCorrect={false}
             autoCapitalize="sentences"
             onBlur={onBlur}
+            fontSize={26}
           />
         </Body>
         <TouchableOpacity

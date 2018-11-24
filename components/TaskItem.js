@@ -76,6 +76,7 @@ class TaskItem extends Component {
                 style={{
                   color: task.completed ? 'grey' : 'black',
                   textDecorationLine: task.completed ? 'line-through' : 'none',
+                  fontSize: 24
                 }}
               >
                 {task.title}

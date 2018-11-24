@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { View, Body } from 'native-base';
 
 import { TrashIcon } from '../components/Icons';
+import Days from '../constants/Days';
 
 
 const styles = StyleSheet.create({
@@ -31,6 +32,27 @@ class TaskScheduleItem extends Component {
 
   onTaskScheduleItemTouch(taskSchedule) {
     this.props.navigation.navigate('EditTaskSchedule', { taskSchedule: taskSchedule });
+  }
+
+  getScheduleText() {
+    const taskSchedule = this.props.taskSchedule;
+    if (taskSchedule.repeat === true) {
+      let dayString = '';
+      for (let i = 0; i < Days.length; i++) {
+        if (taskSchedule.days.includes(Days[i])) {
+          dayString += Days[i].slice(0, 3) + '  ';
+        }
+      }
+      return dayString;
+    }
+    else if (taskSchedule.repeat === false) {
+      let dateString = '';
+      if (taskSchedule.date) {
+        dateString = taskSchedule.date.toLocaleDateString();
+      }
+      return dateString;
+    }
+    return '';
   }
 
   render() {    
@@ -64,13 +86,24 @@ class TaskScheduleItem extends Component {
                 paddingLeft: 25,
               }}
             >
-              <Text
-                style={{
-                  color: 'black',
-                }}
-              >
-                {taskSchedule.title}
-              </Text>
+              <View>
+                <Text
+                  style={{
+                    color: 'black',
+                    fontSize: 24
+                  }}
+                >
+                  {taskSchedule.title}
+                </Text>
+                <Text
+                  style={{
+                    color: 'grey',
+                    fontSize: 15
+                  }}
+                >
+                  {this.getScheduleText()}
+                </Text>
+              </View>
             </Body>
           </TouchableOpacity>
           <TouchableOpacity

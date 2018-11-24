@@ -9,6 +9,7 @@ class TrashIcon extends React.Component {
         name='trash'
         type='evilicon'
         color='black'
+        size={30}
       />
     );
   }

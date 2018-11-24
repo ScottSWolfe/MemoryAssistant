@@ -4,6 +4,7 @@ import DateTimePicker from 'react-native-modal-datetime-picker';
 
 import Colors from '../constants/Colors';
 import Divider from '../components/Divider';
+import Days from '../constants/Days';
 import { firebaseHelper } from '../api/firebaseHelper';
 
 
@@ -11,10 +12,10 @@ export default class EditTaskScheduleScreen extends Component {
 
   state = {
     title: '',
-    repeat: true,
-    date: null,
+    repeat: false,
+    date: new Date(),
     days: [],
-    reminder: true,
+    reminder: false,
     reminder_time: null,
     repeat_reminder_if_uncomplete: false,
     repeat_reminder_interval: 15,
@@ -107,6 +108,18 @@ export default class EditTaskScheduleScreen extends Component {
       firebaseHelper.updateTaskSchedule(taskSchedule);
     }
     this.props.navigation.navigate('TaskSchedules');
+  }
+
+  getSelectedDays() {
+    let dayString = '';
+    if (this.state.days) {
+      for (let i = 0; i < Days.length; i++) {
+        if (this.state.days.includes(Days[i])) {
+          dayString += Days[i].slice(0, 3) + '  ';
+        }
+      }
+    }
+    return dayString;
   }
 
   updateDays(days) {
@@ -230,6 +243,9 @@ export default class EditTaskScheduleScreen extends Component {
                 <Text style={styles.settingsLabels}>
                   Select Days to Repeat
                 </Text>
+                <Text>
+                  {this.getSelectedDays()}
+                </Text>
               </View>
             </TouchableOpacity>
             <Divider/>
@@ -239,14 +255,14 @@ export default class EditTaskScheduleScreen extends Component {
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionHeaderFont}>
-            Patient Reminders
+            Voice Assistant
           </Text>
         </View>
         <Divider/>
 
         <View style={styles.row}>
           <Text style={styles.settingsLabels}>
-            Remind Patient
+            Share Reminder
           </Text>
           <Switch
             value={this.state.reminder}
@@ -326,14 +342,14 @@ export default class EditTaskScheduleScreen extends Component {
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionHeaderFont}>
-            Caregiver Notifications
+            Mobile Application
           </Text>
         </View>
         <Divider/>
 
         <View style={styles.row}>
           <Text style={styles.settingsLabels}>
-            Notify Caregiver if Uncomplete
+            Send Notification if Uncomplete
           </Text>
           <Switch
             value={this.state.notify_caregiver_if_uncomplete}
