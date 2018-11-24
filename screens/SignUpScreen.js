@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Text, TextInput, View, Button } from 'react-native'
+import { Image, StyleSheet, Text, TextInput, View, Button } from 'react-native'
 import { firebaseHelper } from '../api/firebaseHelper';
 
 export default class SignUp extends React.Component {
@@ -16,7 +16,10 @@ export default class SignUp extends React.Component {
     return (
       <View style={styles.container}>
         <View style={ [styles.subcontainer, styles.textContainer] } >
-          <Text>Sign Up</Text>
+        <Image source={require('../assets/images/icon_black.png')} style={{ width: 100, height: 100 }} />
+          <Text style={{ fontSize: 34,  }}>Memory Assistant</Text>
+          <Text style={{ fontSize: 34,  }}></Text>
+          <Text style={{ fontSize: 28 }}>Sign Up</Text>
           {this.state.errorMessage &&
             <Text style={{ color: 'red' }}>
               {this.state.errorMessage}
@@ -71,10 +74,11 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   textInput: {
-    height: 40,
+    height: 60,
     width: '90%',
     borderColor: 'gray',
     borderWidth: 1,
-    marginTop: 8
+    marginTop: 8,
+    fontSize: 26
   }
 })
