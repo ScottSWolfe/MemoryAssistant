@@ -25,15 +25,22 @@ export default class TasksContainer extends React.Component {
     addingTask: false,
   };
 
+  componentDidMount() {
+    const isAndroid = Platform.OS === 'android';
+    this._navListener = this.props.navigation.addListener('didFocus', () => {
+      if (isAndroid) {
+        StatusBar.setBarStyle('dark-content');
+        StatusBar.setBackgroundColor(COLORS.altPrimary);
+      } else {
+        StatusBar.setBarStyle('light-content');
+      }
+    });
+  }
+
   render() {
     const isAndroid = Platform.OS === 'android';
     return (
       <KeyboardAvoidingView style={{ flex: 1, backgroundColor: COLORS.primaryBackground }} behavior="padding" enabled>
-        {isAndroid ? (
-          <StatusBar backgroundColor={COLORS.primary} barStyle="light-content" />
-        ) : (
-          <StatusBar backgroundColor={COLORS.primary} barStyle="dark-content" />
-        )}
         <ScrollView>          
           <FlatList
             style={{ width: '100%', top: 15 }}
@@ -56,7 +63,7 @@ export default class TasksContainer extends React.Component {
             </View>
           ) : null}
         </ScrollView>
-        <AddTaskButton onPress={() => this.setState({ addingTask: true })} />
+        <AddTaskButton color={COLORS.altPrimary} onPress={() => this.setState({ addingTask: true })} />
       </KeyboardAvoidingView>
     );
   }

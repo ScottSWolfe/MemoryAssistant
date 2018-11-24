@@ -5,6 +5,7 @@ export default {
   secondary: '#a8d2f0',
   primaryBackground: 'white',
   primaryText: 'white',
+  altPrimary: '#12C998',
   tintColor,
   tabIconDefault: '#ccc',
   tabIconSelected: tintColor,

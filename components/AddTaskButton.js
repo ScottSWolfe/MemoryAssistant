@@ -1,24 +1,19 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Icon, Fab } from 'native-base';
-import COLORS from '../constants/Colors';
 
-const propTypes = {
-  onPress: PropTypes.func.isRequired,
+
+export default class AddTaskButton extends React.Component {
+  render() {
+    return (
+      <Fab
+        direction="up"
+        containerStyle={{}}
+        style={{ backgroundColor: this.props.color }}
+        position="bottomRight"
+        onPress={this.props.onPress}
+      >
+        <Icon name="add" />
+      </Fab>
+    );
+  }
 };
-
-const AddTaskButton = ({ onPress }) => (
-  <Fab
-    direction="up"
-    containerStyle={{}}
-    style={{ backgroundColor: COLORS.primary }}
-    position="bottomRight"
-    onPress={onPress}
-  >
-    <Icon name="add" />
-  </Fab>
-);
-
-AddTaskButton.propTypes = propTypes;
-
-export default AddTaskButton;

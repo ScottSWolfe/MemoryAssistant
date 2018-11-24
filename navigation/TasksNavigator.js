@@ -10,7 +10,7 @@ export default createStackNavigator({
 {
   navigationOptions: {
     headerStyle: {
-      backgroundColor: Colors.primary,
+      backgroundColor: Colors.altPrimary,
     },
     headerTintColor: Colors.tabBar,
     headerTitleStyle: {

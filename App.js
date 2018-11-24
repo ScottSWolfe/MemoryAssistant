@@ -2,6 +2,7 @@ import React from 'react';
 import { Platform, StatusBar, StyleSheet,  View } from 'react-native';
 
 import AppNavigator from './navigation/AppNavigator';
+import Colors from './constants/Colors';
 
 
 export default class App extends React.Component {
@@ -12,9 +13,10 @@ export default class App extends React.Component {
   }
 
   render() {
+    const isAndroid = Platform.OS === 'android';
     return (
         <View style={styles.container}>
-          {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+          { isAndroid ? <StatusBar backgroundColor={Colors.primary} /> : <StatusBar barStyle="default" /> }
           <AppNavigator />
         </View>
       );
